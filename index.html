@@ -1,0 +1,141 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+</head>
+<style type="text/css">
+	.textareas{
+		border:1px solid #000;
+		float: left;
+		height: 300px;
+		overflow-y:auto;
+		overflow-x:hidden ;
+		word-break: break-all;
+		word-wrap: break-word;
+		vertical-align: middle;
+		width: 500px;
+	}
+	.emotion{
+		background: url(icon.gif) 0 0 no-repeat;
+		cursor: pointer;
+		float: left;
+		height: 20px;
+		text-indent: 20px;
+		width: 80px;
+	}
+	.emotion:hover{
+		background-position: 0 -30px;
+	}
+	.emotions{
+		display: none;
+		float: left;
+		width: 240px;	
+	}
+	.emotions img{
+		float: left;
+		height: 24px;
+		width: 24px;
+	}
+</style>
+<body>
+<div class="textareas" contenteditable="true"></div>
+<p><input type="button" class="sub_btn" value="提交"></p>
+<span class="emotion" flag="false">表情</span>
+<div class="emotions"></div>
+<script type="text/javascript">
+//兼容ie8以下getElementsByClassName
+	function getClassNames(classStr,tagName){  
+	      if (document.getElementsByClassName) {  
+	            return document.getElementsByClassName(classStr)  
+	      }else {  
+	            var nodes = document.getElementsByTagName(tagName),ret = [];           
+	            for(i = 0; i < nodes.length; i++) {  
+	         if(hasClass(nodes[i],classStr)){  
+	                ret.push(nodes[i])  
+	         }  
+	      }  
+	      return ret;  
+	       }  
+	}  
+	function hasClass(tagStr,classStr){  
+	     var arr=tagStr.className.split(/\s+/ );  //这个正则表达式是因为class可以有多个,判断是否包含  
+	     for (var i=0;i<arr.length;i++){  
+            if (arr[i]==classStr){  
+                  return true ;  
+            }  
+	     }  
+	     return false ;  
+	}
+	var textareael,emotionsel,emotion;
+	if(document.getElementsByClassName){
+		textareael=document.getElementsByClassName("textareas")[0];
+		emotionsel=document.getElementsByClassName("emotions")[0];
+		emotion=document.getElementsByClassName("emotion")[0];
+	}
+	else
+	{
+		textareael=getClassNames("textareas","div")[0];
+		emotionsel=getClassNames("emotions","div")[0];
+		emotion=getClassNames("emotion","div")[0];
+	}
+	//初始化表情
+	var emotiosimg=""
+	for(var i=0;i<75;i++){
+		emotiosimg+='<img src="face/'+(i+1)+'.gif" onclick="emotionto(this)" />'
+	}
+	emotionsel.innerHTML=emotiosimg;
+	//点击表情操作
+	function emotionto(param){
+		textareael.innerHTML=textareael.innerHTML+'<img src="'+param.getAttribute("src")+'"/>';
+		textareael.focus()
+
+		if (navigator.userAgent.toLowerCase().match(/.(msie)/)!=null) 
+		{  
+			var rng;  
+			textareael.focus();  
+			rng = document.selection.createRange();  
+			rng.moveStart('character', -textareael.innerText.length);  
+			var text = rng.text;  
+			for (var i = 0; i < textareael.innerText.length; i++) {  
+				if (textareael.innerText.substring(0, i + 1) == text.substring(text.length - i - 1, text.length)) 
+				{
+					result = i + 1;  
+				}  
+			 } 
+		}
+		else
+		{
+			var range = document.createRange();  //返回新创建的 Range 对象，两个边界点都被设置为文档的开头。
+			range.selectNodeContents(textareael); //设置该范围的边界点，使它包含指定节点的子孙节点，但不包含指定的节点本身。 
+			range.collapse(false);  //折叠该范围，使它的边界点重合。如果范围的开始点和结束点在文档的同一位置，则为 true，即范围是空的，或折叠的。
+			var sel = window.getSelection();  //获取选中区域
+			sel.removeAllRanges();  //清除选中的区域
+			sel.addRange(range); //将range添加到selection当中
+		}
+	}
+	//点击表情图标，显示表情
+	emotion.onclick=function(){
+		var flag=this.getAttribute("flag");
+		if(flag=="false"){
+			emotionsel.style.display="block";
+			this.setAttribute("flag","true");
+		}
+		else
+		{
+			emotionsel.style.display="none";
+			this.setAttribute("flag","false");
+		}
+	}
+
+	//点击空白区域，隐藏表情
+//	$(document).bind("click",function(e){
+//		var target = $(e.target);//获取点击时间
+//		if(target.closest(".emotions").length == 0&&target.attr("class")!="emotion")
+//		{
+//			$(".emotion").attr("flag","false");
+//			$(".emotions").hide();
+//		}
+//	})
+</script>
+</body>
+</html>
